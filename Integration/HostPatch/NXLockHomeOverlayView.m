@@ -220,7 +220,7 @@
 
 - (void)setWallpaperImage:(UIImage *)wallpaperImage {
     _wallpaperImage = wallpaperImage;
-    if (self.isViewLoaded) {
+    if (self.wallpaperView != nil) {
         self.wallpaperView.image = wallpaperImage;
     }
 }

@@ -2,17 +2,22 @@
 set -eu
 
 ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-HEADER="$ROOT/Sources/NXLockScreenViewController.h"
-IMPL="$ROOT/Sources/NXLockScreenViewController.m"
-GUIDE="$ROOT/Integration/WindowServer-Integration.md"
+OVERLAY_H="$ROOT/Integration/HostPatch/NXLockHomeOverlayView.h"
+OVERLAY_M="$ROOT/Integration/HostPatch/NXLockHomeOverlayView.m"
+SERVER_M="$ROOT/Integration/HostPatch/NXWindowServer+LockHome.m"
+PATCHER="$ROOT/Tools/apply_nyxian_patch.py"
+GUIDE="$ROOT/Integration/HostPatch/README.md"
 
-test -s "$HEADER"
-test -s "$IMPL"
+test -s "$OVERLAY_H"
+test -s "$OVERLAY_M"
+test -s "$SERVER_M"
+test -s "$PATCHER"
 test -s "$GUIDE"
 
-grep -q 'unlockHandler' "$HEADER"
-grep -q 'UISwipeGestureRecognizerDirectionUp' "$IMPL"
-grep -q 'updateClock' "$IMPL"
-grep -q 'host-side' "$GUIDE"
+grep -q 'unlockHandler' "$OVERLAY_H"
+grep -q 'handleSwipePan' "$OVERLAY_M"
+grep -q 'nx_showLockHomeOnFirstPresentation' "$SERVER_M"
+grep -q 'makeKeyAndVisible' "$PATCHER"
+grep -q 'has not been built or runtime-tested' "$GUIDE"
 
-echo "PASS: source files and expected integration hooks are present."
+echo "PASS: LockHome overlay and source patcher checks passed."

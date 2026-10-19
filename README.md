@@ -14,8 +14,10 @@ iOS-style lock-screen prototype for **Nyxian Beta 0.11.5**.
 
 ## Repository layout
 
-- `Sources/NXLockScreenViewController.h/.m` — UIKit lock-screen component, including swipe-up detection.
-- `Integration/WindowServer-Integration.md` — host integration checklist.
+- `Integration/HostPatch/` — overlay and WindowServer category.
+- `Integration/HostPatch/README.md` — integration and safety notes.
+- `Tools/apply_nyxian_patch.py` — source patcher for a Nyxian checkout.
+- `PROJECT_STATUS.md` — what has and has not been verified.
 - `Tests/SourceChecks.sh` — basic source sanity checks.
 
 ## Integration model
@@ -32,7 +34,7 @@ This repository deliberately avoids pretending an ordinary jailed-app tweak can 
 
 ## Current limitations
 
-- This is not a compiled `.deb`, IPA, or modified Procursus ROM.
+- This is not yet a compiled or runtime-tested IPA, Debian package, or modified Procursus ROM.
 - Camera/flashlight shortcuts are not shown because no Nyxian host callbacks are defined for those actions.
 - The component has not been tested inside the private Beta build. Run the source checks and build in the matching host project before deploying.
 

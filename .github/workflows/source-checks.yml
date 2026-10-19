@@ -13,3 +13,5 @@ jobs:
         uses: actions/checkout@v4
       - name: Run source checks
         run: sh Tests/SourceChecks.sh
+      - name: Run patch script tests
+        run: python3 -m unittest discover -s Tests -p 'test_*.py'

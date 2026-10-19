@@ -1,43 +1,40 @@
 # Nyxian LockHome
 
-iOS-style lock-screen prototype for **Nyxian Beta 0.11.5**.
+A host-side iOS-style lock-screen overlay for Nyxian Beta 0.11.5.
 
-> Status: source prototype / integration work in progress. This repository does not contain a verified build for the user's private Nyxian Beta build. The component must be integrated into Nyxian's own WindowServer/root presentation layer; injecting a tweak into a guest app alone will not add a lock screen to the whole environment.
+## Features
 
-## Goals
-
-- Full-screen lock screen with a large live clock, date, and wallpaper.
-- Swipe-up gesture to invoke the host's unlock callback.
-- No private device data, credentials, or serial numbers.
-- Safe integration seam: the host decides what "unlock" means and presents its own home/root UI.
-- Build and integration notes for Nyxian Beta 0.11.5.
+- Large localized clock and date.
+- Lock glyph, home indicator, and optional wallpaper image.
+- Swipe-up gesture with an animated reveal of Nyxian's existing UI.
+- A source patcher that checks the expected WindowServer insertion point before editing.
+- GitHub Actions source checks and patcher tests.
 
 ## Repository layout
 
-- `Integration/HostPatch/` — overlay and WindowServer category.
-- `Integration/HostPatch/README.md` — integration and safety notes.
-- `Tools/apply_nyxian_patch.py` — source patcher for a Nyxian checkout.
-- `PROJECT_STATUS.md` — what has and has not been verified.
-- `Tests/SourceChecks.sh` — basic source sanity checks.
+- `Integration/HostPatch/` — Objective-C overlay and NXWindowServer category.
+- `Integration/HostPatch/README.md` — integration and compatibility notes.
+- `Tools/apply_nyxian_patch.py` — guarded source patcher.
+- `Tests/test_patcher.py` — dry-run, apply, and idempotence tests.
+- `PROJECT_STATUS.md` — archive findings and verification status.
 
-## Integration model
+## Apply to Nyxian source
 
-The feature belongs in Nyxian's **host-side WindowServer presentation layer**. Present `NXLockScreenViewController` as a full-screen view/controller over the host's app surface. Provide an unlock handler that dismisses the lock screen and switches to Nyxian's home/root presentation. Do not assume UIKit/SwiftUI APIs can be called directly from the compiled ROM `System/Rom/init`; that executable is not the place to render this UI.
+Use a clean Nyxian source checkout, not the compiled IPA:
 
-This repository deliberately avoids pretending an ordinary jailed-app tweak can modify Nyxian's global WindowServer. The exact integration point must be confirmed against the matching 0.11.5 Beta source/build.
+```sh
+python3 Tools/apply_nyxian_patch.py /path/to/Nyxian --dry-run
+python3 Tools/apply_nyxian_patch.py /path/to/Nyxian
+```
 
-## Requirements
+The path should contain `Nyxian/LindChain/WindowServer/NXWindowServer.m`. Inspect `git diff`, build using Nyxian's normal Xcode workflow, and test on a disposable install.
 
-- Xcode / iOS SDK compatible with the Nyxian host app's deployment target.
-- The matching Nyxian Beta 0.11.5 host source and its build settings.
-- A wallpaper image supplied by the integrator (the controller can also render without one).
+## Status
 
-## Current limitations
+The supplied IPA is Nyxian 0.11.5, build `20261014.2.RELEASE`. It contains WindowServer headers, but not the matching WindowServer implementation source. The Procursus archive contains a compiled ROM init and default wallpapers, not the UIKit host implementation. The patcher uses a source insertion point seen in public upstream source and refuses to proceed if the target source differs.
 
-- This is not yet a compiled or runtime-tested IPA, Debian package, or modified Procursus ROM.
-- Camera/flashlight shortcuts are not shown because no Nyxian host callbacks are defined for those actions.
-- The component has not been tested inside the private Beta build. Run the source checks and build in the matching host project before deploying.
+**No modified IPA, compiled package, or rebuilt ROM is included yet.** The overlay has not been compiled or runtime-tested against the supplied beta build. Without an asset named `LockHomeWallpaper`, the overlay uses a gradient fallback.
 
 ## License
 
-The WindowServer integration files are marked AGPL-3.0-or-later to align with Nyxian's upstream license. This does not change the license of Nyxian itself or grant rights beyond the applicable upstream terms.
+Integration files use AGPL-3.0-or-later, consistent with Nyxian upstream. This does not change the license of Nyxian itself.

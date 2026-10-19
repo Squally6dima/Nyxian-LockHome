@@ -1,34 +1,35 @@
-# Host patch for Nyxian LockHome
+# Host patch integration
 
-These files are designed for the Nyxian host's UIKit-based NXWindowServer, not for ROM/System/Rom/init.
+These files target Nyxian's host-side UIKit `NXWindowServer`, not `ROM/System/Rom/init`.
 
 ## What it does
 
-- Adds a full-window overlay above Nyxian's managed app layer.
-- Shows a localized date, large live clock, lock symbol, optional wallpaper, and home indicator.
-- Requires an upward pan gesture to dismiss the overlay.
-- Keeps the actual window/root manager intact; unlock reveals the existing Nyxian UI.
+- Adds a full-window overlay above the WindowServer and managed app windows.
+- Shows a localized date, large clock, lock icon, optional wallpaper, and home indicator.
+- Detects an upward pan gesture and animates the overlay away, revealing the existing Nyxian UI.
+- Does not add authentication or change Procursus binaries.
 
-## Apply to a source checkout
+## Apply
 
-From the root of this repository, use a clean Nyxian source checkout:
+From this repository root, point the patcher at a clean Nyxian source checkout:
 
-\`\`\`sh
-python3 Tools/apply-host-patch.py --repo-root /path/to/Nyxian --dry-run
-python3 Tools/apply-host-patch.py --repo-root /path/to/Nyxian
-\`\`\`
+```sh
+python3 Tools/apply_nyxian_patch.py /path/to/Nyxian --dry-run
+python3 Tools/apply_nyxian_patch.py /path/to/Nyxian
+```
 
-The script copies the four Objective-C files into Nyxian/LindChain/WindowServer/, then adds an import and one hook call to NXWindowServer.m. It refuses to overwrite files or patch an unfamiliar/partially patched source file.
+The script copies four Objective-C files into `Nyxian/LindChain/WindowServer/LockHome/`, adds the LockHome import to `NXWindowServer.m`, and inserts one hook after the window layer is made interactive. It is idempotent and rejects a partial patch or a missing/ambiguous insertion point.
 
-The upstream project uses a synchronized Xcode source group, so new source files under the Nyxian folder should be discovered by Xcode automatically. Verify this in the project file and inspect git diff before building.
+Nyxian's current public project uses a synchronized Xcode source group, so new source files under `Nyxian/` should be discovered automatically. Still inspect the project and `git diff` before building.
 
 ## Wallpaper
 
-The overlay looks for an asset named LockHomeWallpaper. If it is absent, the overlay uses a built-in gradient background. Add the image to the Nyxian asset catalog manually if you want a custom wallpaper.
+The overlay looks for an image named `LockHomeWallpaper`. If it is absent, a built-in gradient is used. Add a wallpaper image to the host app's asset catalog if desired.
 
-## Important limitations
+## What the supplied archives confirm
 
-- The supplied Nyxian.ipa contains the WindowServer headers but not its .m implementation source. The implementation is available in the public upstream repository, but its current source revision may not be byte-for-byte identical to the supplied Beta (0.11.5, build 20261014.2.RELEASE).
-- This patch has not been compiled or runtime-tested against the supplied Beta IPA.
-- The script modifies a source checkout only. It does not re-sign or modify a compiled IPA and does not modify the Procursus ROM.
-- The first successful build must be done with the matching Xcode project, SDK and dependency setup. Review the diff and retain a clean rollback copy.
+- The uploaded IPA identifies itself as Nyxian 0.11.5, build `20261014.2.RELEASE`, with SDK metadata `iphoneos27.0`.
+- It includes WindowServer headers, but not the matching WindowServer implementation source in the bundled kernel tree.
+- The Procursus archive includes a ROM manifest, compiled init/bootstrap binaries, and default light/dark wallpaper PNGs.
+
+The public upstream source has the candidate `makeKeyAndVisible` insertion point, but it may differ from the user's beta build. This patch has **not** been built or runtime-tested against the supplied IPA. The patcher only edits source; it does not re-sign or alter an IPA or ROM.

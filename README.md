@@ -38,4 +38,4 @@ This repository deliberately avoids pretending an ordinary jailed-app tweak can 
 
 ## License
 
-No upstream Nyxian code is copied into this repository at this stage. The original prototype files in this repository are licensed under MIT; that license does not apply to Nyxian itself.
+The WindowServer integration files are marked AGPL-3.0-or-later to align with Nyxian's upstream license. This does not change the license of Nyxian itself or grant rights beyond the applicable upstream terms.

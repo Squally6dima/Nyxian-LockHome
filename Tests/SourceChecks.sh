@@ -18,6 +18,6 @@ grep -q 'unlockHandler' "$OVERLAY_H"
 grep -q 'handleSwipePan' "$OVERLAY_M"
 grep -q 'nx_showLockHomeOnFirstPresentation' "$SERVER_M"
 grep -q 'makeKeyAndVisible' "$PATCHER"
-grep -q 'has not been built or runtime-tested' "$GUIDE"
+grep -q 'runtime-tested against the supplied IPA' "$GUIDE"
 
 echo "PASS: LockHome overlay and source patcher checks passed."

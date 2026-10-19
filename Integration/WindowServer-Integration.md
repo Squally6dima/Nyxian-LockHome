@@ -2,7 +2,7 @@
 
 The supplied Beta IPA and Procursus ROM were inspected. The IPA contains WindowServer headers but not the Objective-C implementation files; the ROM contains a compiled init executable and does not render the host UIKit interface.
 
-For a source-level host patch, use the implementation and guarded patcher in [HostPatch](HostPatch/README.md).
+For a source-level host-side UIKit patch, use the implementation and guarded patcher in [HostPatch](HostPatch/README.md).
 
 ## Quick start
 

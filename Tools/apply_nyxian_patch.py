@@ -53,6 +53,10 @@ def main() -> int:
         print("ERROR: expected exactly one makeKeyAndVisible anchor. This Nyxian version may differ; no files changed.", file=sys.stderr)
         return 5
 
+    if not has_import and source_text.count(ANCHOR) != 1:
+        print("ERROR: expected exactly one makeKeyAndVisible anchor. This Nyxian version may differ; no files changed.", file=sys.stderr)
+        return 5
+
     for name in COMPONENTS:
         if not (ROOT / "Integration" / "HostPatch" / name).is_file():
             print(f"ERROR: missing component file: Integration/HostPatch/{name}", file=sys.stderr)
@@ -81,9 +85,6 @@ def main() -> int:
     lines.insert(last_import_index + 1, IMPORT_LINE + "\n")
 
     patched = "".join(lines)
-    if patched.count(ANCHOR) != 1:
-        print("ERROR: expected exactly one makeKeyAndVisible insertion anchor. Component files copied; source file not modified.", file=sys.stderr)
-        return 8
     patched = patched.replace(ANCHOR, ANCHOR + "\n\n    // NXLockHome: show once over the host WindowServer.\n" + HOOK_LINE, 1)
     server_source.write_text(patched, encoding="utf-8")
     print("PATCHED:", server_source)

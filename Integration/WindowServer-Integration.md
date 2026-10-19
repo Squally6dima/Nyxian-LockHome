@@ -1,35 +1,20 @@
 # Integrating LockHome into Nyxian
 
-## Important architecture note
+The supplied Beta IPA and Procursus ROM were inspected. The IPA contains WindowServer headers but not the Objective-C implementation files; the ROM contains a compiled init executable and does not render the host UIKit interface.
 
-This UI is a UIKit component, not a patch to the compiled Procursus `System/Rom/init`. It must be presented by the **host-side process that owns Nyxian's window/app presentation**. A tweak injected into one guest app cannot create a global lock screen over the whole Nyxian environment.
+For a source-level host patch, use the implementation and guarded patcher in [HostPatch](HostPatch/README.md).
 
-## Host integration steps
+## Quick start
 
-1. Open the exact Nyxian Beta 0.11.5 host project and identify the process/controller that owns the app surface and root/home presentation.
-2. Add `Sources/NXLockScreenViewController.h` and `.m` to that target. Ensure ARC is enabled.
-3. Present the lock screen after the host UI is initialized:
-   ```objc
-   UIImage *wallpaper = [UIImage imageNamed:@"LockHomeWallpaper"];
-   __weak typeof(self) weakSelf = self;
-   NXLockScreenViewController *lockVC =
-       [[NXLockScreenViewController alloc] initWithWallpaperImage:wallpaper
-                                                   unlockHandler:^{
-           [weakSelf dismissViewControllerAnimated:YES completion:^{
-               // TODO: call Nyxian's actual home/root presentation method here.
-           }];
-       }];
-   [self presentViewController:lockVC animated:NO completion:nil];
-   ```
-   Replace `self` with the actual host controller and implement the TODO using Nyxian's real home/root API.
-4. Add a wallpaper image named `LockHomeWallpaper` to the target's asset catalog, or pass `nil` to use the fallback background.
-5. Build for the same deployment target and architectures as the Nyxian host. Do not copy the component into the guest Procursus filesystem expecting it to launch automatically.
-6. Test swipe-up, rotation/layout, VoiceOver, and dismissal on a disposable test environment before replacing any existing build.
+1. Obtain a clean Nyxian source checkout matching the supplied Beta build as closely as possible.
+2. Run \`python3 Tools/apply-host-patch.py --repo-root /path/to/Nyxian --dry-run\`.
+3. If the expected source anchors match, run the same command without \`--dry-run\`.
+4. Review \`git diff\`, build using Nyxian's normal macOS/Xcode workflow, and test on a disposable device.
 
-## What is still needed for a working Nyxian build
+The patch adds a full-window overlay above NXWindowServer's managed app layer. The overlay shows the date, large clock, optional wallpaper and home indicator, and dismisses on an upward swipe.
 
-- Matching Beta 0.11.5 host source/project (the beta build identifier reported was `20261014.2.RELEASE`).
-- The actual root/home presentation API and the correct initialization point.
-- A build/test environment for the matching target.
+## Compatibility warning
 
-This repository does not currently include those private project files and therefore cannot claim a working integrated IPA/ROM yet.
+The supplied IPA reports Nyxian 0.11.5, build \`20261014.2.RELEASE\`, and SDK metadata \`iphoneos27.0\`. The public upstream source implementation may not exactly match that binary. The patcher deliberately checks unique source anchors and refuses to patch an unfamiliar or partially patched file.
+
+This repository does not yet contain a compiled, signed IPA or modified Procursus ROM. The patch is source code and has not been runtime-tested against the supplied beta build.

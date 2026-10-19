@@ -49,8 +49,8 @@ def main() -> int:
         print("ERROR: partial patch detected (import and hook do not agree). No files changed.", file=sys.stderr)
         return 4
 
-    if not has_import and ANCHOR not in source_text:
-        print("ERROR: couldn't find the expected makeKeyAndVisible anchor. This Nyxian version may differ.", file=sys.stderr)
+    if not has_import and source_text.count(ANCHOR) != 1:
+        print("ERROR: expected exactly one makeKeyAndVisible anchor. This Nyxian version may differ; no files changed.", file=sys.stderr)
         return 5
 
     for name in COMPONENTS:

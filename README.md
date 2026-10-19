@@ -14,8 +14,7 @@ iOS-style lock-screen prototype for **Nyxian Beta 0.11.5**.
 
 ## Repository layout
 
-- `Sources/NXLockScreenViewController.h/.m` — UIKit lock-screen component.
-- `Sources/NXHomeGestureController.h/.m` — reusable swipe-up gesture detector.
+- `Sources/NXLockScreenViewController.h/.m` — UIKit lock-screen component, including swipe-up detection.
 - `Integration/WindowServer-Integration.md` — host integration checklist.
 - `Tests/SourceChecks.sh` — basic source sanity checks.
 
@@ -39,4 +38,4 @@ This repository deliberately avoids pretending an ordinary jailed-app tweak can 
 
 ## License
 
-No upstream Nyxian code is copied into this repository at this stage. Add a license only after confirming the project's intended licensing and attribution.
+No upstream Nyxian code is copied into this repository at this stage. The original prototype files in this repository are licensed under MIT; that license does not apply to Nyxian itself.

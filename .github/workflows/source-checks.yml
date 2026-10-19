@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+      - name: Check patcher syntax
+        run: python3 -m py_compile Tools/apply_nyxian_patch.py
       - name: Run source checks
         run: sh Tests/SourceChecks.sh
       - name: Run patch script tests
